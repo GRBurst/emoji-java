@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -92,17 +93,17 @@ public class EmojiLoader {
       return null;
     }
 
-    byte[] bytes = rawCodePointsToString(json.getString("unified")).getBytes("UTF-8");
+    byte[] bytes = rawCodePointsToString(json.getString("unified")).getBytes(StandardCharsets.UTF_8);
     String description = null;
-    if (json.has("name")) {
-      description = json.getString("name");
+    if (json.has("name") && !json.isNull("name")) {
+      description = json.getString("name").toLowerCase();
     }
     boolean supportsFitzpatrick = false;
     if (json.has("supports_fitzpatrick")) {
       supportsFitzpatrick = json.getBoolean("supports_fitzpatrick");
     }
     List<String> aliases = jsonArrayToStringList(json.getJSONArray("short_names"));
-    List<String> tags = jsonArrayToStringList(json.getJSONArray("texts"));
+    List<String> tags = jsonArrayToStringList(json.getJSONArray("short_names"));
     return new Emoji(description, supportsFitzpatrick, aliases, tags, bytes);
   }
 
