@@ -59,14 +59,40 @@ public class EmojiLoader {
     return sb.toString();
   }
 
+  private static String codePointToString(String point)
+  {
+      String ret;
+      if (point == null || point.isEmpty())
+      {
+          return point;
+      }
+      int unicodeScalar = Integer.parseInt(point, 16);
+      if (Character.isSupplementaryCodePoint(unicodeScalar))
+      {
+          ret = String.valueOf(Character.toChars(unicodeScalar));
+      } else {
+          ret = String.valueOf((char) unicodeScalar);
+      }
+      return ret;
+  }
+
+  private static String rawCodePointsToString(String rawPoint)
+  {
+      String[] points = rawPoint.split("-");
+      StringBuilder ret = new StringBuilder();
+      for (String hexPoint : points){
+          ret.append(codePointToString(hexPoint));
+      }
+      return ret.toString();
+  }
   protected static Emoji buildEmojiFromJSON(
     JSONObject json
   ) throws UnsupportedEncodingException {
-    if (!json.has("emoji")) {
+    if (!json.has("unified")) {
       return null;
     }
 
-    byte[] bytes = json.getString("emoji").getBytes("UTF-8");
+    byte[] bytes = rawCodePointsToString(json.getString("unified")).getBytes("UTF-8");
     String description = null;
     if (json.has("name")) {
       description = json.getString("name");
