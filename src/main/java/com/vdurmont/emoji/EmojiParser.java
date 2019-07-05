@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.logging.Logger;
 
 /**
  * Provides methods to parse strings with emojis.
@@ -288,7 +289,7 @@ public class EmojiParser {
    * @return the string with the emojis replaced by their text representation.
    */
   public static String parseToText(String input) {
-    return parseToAliases(input, FitzpatrickAction.REMOVE);
+    return parseToText(input, FitzpatrickAction.REMOVE);
   }
 
   /**
@@ -305,27 +306,33 @@ public class EmojiParser {
   public static String parseToText(
     String input,
     final FitzpatrickAction fitzpatrickAction
-  ) {
-    EmojiTransformer emojiTransformer = new EmojiTransformer() {
-      public String transform(UnicodeCandidate unicodeCandidate) {
-        switch (fitzpatrickAction) {
-          default:
-          case PARSE:
-          case REMOVE:
-            return ":" +
-              unicodeCandidate.getEmoji().getTexts().get(0) +
-              ":";
-          case IGNORE:
-            return ":" +
-              unicodeCandidate.getEmoji().getTexts().get(0) +
-              ":" +
-              unicodeCandidate.getFitzpatrickUnicode();
-        }
-      }
-    };
+    ) {
+      // Get all the potential aliases
+      List<AliasCandidate> candidates = getAliasCandidates(input);
 
-    return parseFromUnicode(input, emojiTransformer);
-  }
+      // Replace the aliases by their unicode
+      String result = input;
+      for (AliasCandidate candidate : candidates) {
+          Emoji emoji = EmojiManager.getForAlias(candidate.alias);
+          if (emoji != null) {
+              List<String> texts = emoji.getTexts();
+
+              String replacement = "";
+
+              if(!texts.isEmpty())
+                  replacement += texts.get(0);
+
+              result = result.replace(
+                      ":" + candidate.fullString + ":",
+                      replacement
+                      );
+
+          }
+      }
+      
+      return result;
+    }
+
 
   /**
    * Removes all emojis from a String
