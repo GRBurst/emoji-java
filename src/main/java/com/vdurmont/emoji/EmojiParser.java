@@ -280,6 +280,54 @@ public class EmojiParser {
   }
 
   /**
+   * See {@link #parseToText(String, FitzpatrickAction)} with the action
+   * "PARSE"
+   *
+   * @param input the string to parse
+   *
+   * @return the string with the emojis replaced by their text representation.
+   */
+  public static String parseToText(String input) {
+    return parseToAliases(input, FitzpatrickAction.REMOVE);
+  }
+
+  /**
+   * Replaces the emoji's unicode occurrences by one of their alias
+   * (between 2 ':').<br>
+   * Example: <code>😄</code> will be replaced by <code>:-D</code><br>
+   * <br>
+   *
+   * @param input             the string to parse
+   * @param fitzpatrickAction the action to apply for the fitzpatrick modifiers
+   *
+   * @return the string with the emojis replaced by their alias.
+   */
+  public static String parseToText(
+    String input,
+    final FitzpatrickAction fitzpatrickAction
+  ) {
+    EmojiTransformer emojiTransformer = new EmojiTransformer() {
+      public String transform(UnicodeCandidate unicodeCandidate) {
+        switch (fitzpatrickAction) {
+          default:
+          case PARSE:
+          case REMOVE:
+            return ":" +
+              unicodeCandidate.getEmoji().getTexts().get(0) +
+              ":";
+          case IGNORE:
+            return ":" +
+              unicodeCandidate.getEmoji().getTexts().get(0) +
+              ":" +
+              unicodeCandidate.getFitzpatrickUnicode();
+        }
+      }
+    };
+
+    return parseFromUnicode(input, emojiTransformer);
+  }
+
+  /**
    * Removes all emojis from a String
    *
    * @param str the string to process

@@ -16,6 +16,7 @@ public class Emoji {
   private final boolean supportsFitzpatrick;
   private final List<String> aliases;
   private final List<String> tags;
+  private final List<String> texts;
   private final String unicode;
   private final String htmlDec;
   private final String htmlHex;
@@ -27,6 +28,7 @@ public class Emoji {
    * @param supportsFitzpatrick Whether the emoji supports Fitzpatrick modifiers
    * @param aliases             the aliases for this emoji
    * @param tags                the tags associated with this emoji
+   * @param texts               the text representation for this emoji
    * @param bytes               the bytes that represent the emoji
    */
   protected Emoji(
@@ -34,12 +36,14 @@ public class Emoji {
     boolean supportsFitzpatrick,
     List<String> aliases,
     List<String> tags,
+    List<String> texts,
     byte... bytes
   ) {
     this.description = description;
     this.supportsFitzpatrick = supportsFitzpatrick;
     this.aliases = Collections.unmodifiableList(aliases);
     this.tags = Collections.unmodifiableList(tags);
+    this.texts = Collections.unmodifiableList(texts);
 
     int count = 0;
     try {
@@ -109,6 +113,15 @@ public class Emoji {
    */
   public List<String> getTags() {
     return this.tags;
+  }
+
+  /**
+   * Returns the text representation of the emoji
+   *
+   * @return the texts (unmodifiable)
+   */
+  public List<String> getTexts() {
+    return this.texts;
   }
 
   /**
@@ -192,6 +205,7 @@ public class Emoji {
    *   supportsFitzpatrick=false,
    *   aliases=[smile],
    *   tags=[happy, joy, pleased],
+   *   texts=[:-D, :D],
    *   unicode='😄',
    *   htmlDec='&amp;#128516;',
    *   htmlHex='&amp;#x1f604;'
@@ -206,6 +220,7 @@ public class Emoji {
       ", supportsFitzpatrick=" + supportsFitzpatrick +
       ", aliases=" + aliases +
       ", tags=" + tags +
+      ", texts=" + texts +
       ", unicode='" + unicode + '\'' +
       ", htmlDec='" + htmlDec + '\'' +
       ", htmlHex='" + htmlHex + '\'' +

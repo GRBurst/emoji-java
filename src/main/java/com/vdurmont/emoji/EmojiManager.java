@@ -20,6 +20,8 @@ public class EmojiManager {
     new HashMap<String, Emoji>();
   private static final Map<String, Set<Emoji>> EMOJIS_BY_TAG =
     new HashMap<String, Set<Emoji>>();
+  private static final Map<String, Set<Emoji>> EMOJIS_BY_TEXT =
+    new HashMap<String, Set<Emoji>>();
   private static final List<Emoji> ALL_EMOJIS;
   private static final EmojiTrie EMOJI_TRIE;
 
@@ -34,6 +36,12 @@ public class EmojiManager {
             EMOJIS_BY_TAG.put(tag, new HashSet<Emoji>());
           }
           EMOJIS_BY_TAG.get(tag).add(emoji);
+        }
+        for (String text : emoji.getTexts()) {
+          if (EMOJIS_BY_TEXT.get(text) == null) {
+            EMOJIS_BY_TEXT.put(text, new HashSet<Emoji>());
+          }
+          EMOJIS_BY_TEXT.get(text).add(emoji);
         }
         for (String alias : emoji.getAliases()) {
           EMOJIS_BY_ALIAS.put(alias, emoji);
@@ -65,6 +73,21 @@ public class EmojiManager {
       return null;
     }
     return EMOJIS_BY_TAG.get(tag);
+  }
+
+  /**
+   * Returns all the {@link com.vdurmont.emoji.Emoji}s for a given text.
+   *
+   * @param text the text representation
+   *
+   * @return the associated {@link com.vdurmont.emoji.Emoji}s, null if the text
+   * is unknown
+   */
+  public static Set<Emoji> getForText(String text) {
+    if (text == null) {
+      return null;
+    }
+    return EMOJIS_BY_TEXT.get(text);
   }
 
   /**
@@ -173,5 +196,14 @@ public class EmojiManager {
    */
   public static Collection<String> getAllTags() {
     return EMOJIS_BY_TAG.keySet();
+  }
+
+  /**
+   * Returns all the text representations in the database
+   *
+   * @return the texts
+   */
+  public static Collection<String> getAllTexts() {
+    return EMOJIS_BY_TEXT.keySet();
   }
 }

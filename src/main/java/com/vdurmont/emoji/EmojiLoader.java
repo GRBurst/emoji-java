@@ -103,8 +103,14 @@ public class EmojiLoader {
       supportsFitzpatrick = json.getBoolean("supports_fitzpatrick");
     }
     List<String> aliases = jsonArrayToStringList(json.getJSONArray("short_names"));
-    List<String> tags = jsonArrayToStringList(json.getJSONArray("short_names"));
-    return new Emoji(description, supportsFitzpatrick, aliases, tags, bytes);
+    List<String> tags = null;
+    List<String> texts = null;
+    
+    if (json.has("texts") && !json.isNull("texts")) {
+        texts = jsonArrayToStringList(json.getJSONArray("texts"));
+        texts.add(0, json.getString("text"));
+    }
+    return new Emoji(description, supportsFitzpatrick, aliases, tags, texts, bytes);
   }
 
   private static List<String> jsonArrayToStringList(JSONArray array) {
